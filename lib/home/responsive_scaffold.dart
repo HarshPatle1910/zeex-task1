@@ -6,7 +6,10 @@ import 'package:task1/members_pages/samya/device_management_page.dart';
 import '../ai_model/ai_model_control_page.dart';
 import '../alert/recent_alert_screen.dart';
 import '../dashboard/dashboard_screen.dart';
+import '../employee_management/employee_management.dart';
+import '../incident/incident_dashboard.dart';
 import '../live_feed/live_feed_page.dart';
+import '../safety_levels/safety_levels.dart';
 import 'navigation_sidebar.dart';
 
 class DashboardController extends GetxController {
@@ -45,15 +48,17 @@ class ResponsiveScaffold extends StatelessWidget {
                   case 'Live Feed':
                     return LiveFeedPage();
                   case 'Incidents':
-                    return MainDashboardContent();
+                    return IncidentDashboard();
                   case 'AI Models Control':
                     return AssignModelScreen();
                   case 'Safety Level':
-                    return MainDashboardContent();
+                    return AISafetyScreen();
                   case 'Devices':
                     return DeviceManagementPage();
                   case 'Employee Management':
-                    return MainDashboardContent();
+                    return EmployeeManagementScreen(
+                      title: 'Employee Management Dashboard',
+                    );
                   case 'Customer Insights':
                     return MainDashboardContent();
                   case 'Graph & Analytics':
