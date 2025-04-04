@@ -1,77 +1,93 @@
-// Login Page
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:task1/authentication/register_screen.dart';
+import 'package:task1/home/responsive_scaffold.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  String errorMessage = "";
 
-  Future<void> _loginUser() async {
-    final String apiUrl =
-        "https://4zeo5rp7q1.execute-api.ap-south-1.amazonaws.com/prod/login";
+  Future<void> login() async {
+    final url = Uri.parse(
+      "https://4zeo5rp7q1.execute-api.ap-south-1.amazonaws.com/prod/login",
+    ); // Replace with your API URL
+
     final response = await http.post(
-      Uri.parse(apiUrl),
+      url,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        "username": _usernameController.text,
-        "password": _passwordController.text,
+        "username": usernameController.text,
+        "password": passwordController.text,
       }),
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
-      String token = responseData['access_token'];
-      ScaffoldMessenger.of(
+      final data = jsonDecode(response.body);
+      final token = data["token"];
+      // Save token for authenticated use
+      print("JWT Token: $token");
+      Navigator.push(
         context,
-      ).showSnackBar(SnackBar(content: Text("Login Successful!")));
-      Navigator.pushNamed(context, '/dashboard');
+        MaterialPageRoute(builder: (context) => ResponsiveScaffold()),
+      );
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Login Failed")));
+      final data = jsonDecode(response.body);
+      setState(() {
+        errorMessage = data["error"];
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login")),
+      appBar: AppBar(title: const Text("User Login")),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: "Username"),
+              controller: usernameController,
+              decoration: const InputDecoration(labelText: "Username"),
             ),
             TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: "Password"),
+              controller: passwordController,
               obscureText: true,
+              decoration: const InputDecoration(labelText: "Password"),
             ),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: login, child: const Text("Login")),
+            if (errorMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
             SizedBox(height: 20),
-            ElevatedButton(onPressed: _loginUser, child: Text("Login")),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterPage()),
+                );
+              },
+              child: Text("Register"),
+            ),
           ],
         ),
       ),
-    );
-  }
-}
-
-// Dashboard Page
-class DashboardPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Dashboard")),
-      body: Center(child: Text("Welcome to Zeex AI Dashboard")),
     );
   }
 }
