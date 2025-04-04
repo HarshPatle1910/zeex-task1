@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task1/home/responsive_scaffold.dart';
 import 'package:task1/home/sidebar_menu_item.dart';
+
+import '../authentication/login_screen.dart';
 
 class NavigationSidebar extends StatelessWidget {
   final DashboardController controller;
 
   const NavigationSidebar({Key? key, required this.controller})
     : super(key: key);
+
+  void logoutUser(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("access_token");
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +101,24 @@ class NavigationSidebar extends StatelessWidget {
                   title: "Settings",
                   icon: Icons.settings,
                   controller: controller,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: EdgeInsets.all(10),
+                    ),
+                    onPressed: () => logoutUser(context),
+                    child: Text(
+                      "Logout",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

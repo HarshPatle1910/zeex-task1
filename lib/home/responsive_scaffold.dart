@@ -5,11 +5,13 @@ import 'package:task1/members_pages/samya/device_management_page.dart';
 
 import '../ai_model/ai_model_control_page.dart';
 import '../alert/recent_alert_screen.dart';
+import '../customer_insight/customer_insight_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../employee_management/employee_management.dart';
 import '../incident/incident_dashboard.dart';
 import '../live_feed/live_feed_page.dart';
 import '../safety_levels/safety_levels.dart';
+import '../settings/settings_screen.dart';
 import 'navigation_sidebar.dart';
 
 class DashboardController extends GetxController {
@@ -60,11 +62,13 @@ class ResponsiveScaffold extends StatelessWidget {
                       title: 'Employee Management Dashboard',
                     );
                   case 'Customer Insights':
-                    return MainDashboardContent();
+                    return customer_insight_dashboard(
+                      title: 'customer Insight Dashboard',
+                    );
                   case 'Graph & Analytics':
                     return GraphAnalyticsSection();
                   case 'Settings':
-                    return MainDashboardContent();
+                    return SettingsScreen();
                   default:
                     return MainDashboardContent();
                 }

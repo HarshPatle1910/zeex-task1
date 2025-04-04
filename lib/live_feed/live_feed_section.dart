@@ -5,56 +5,54 @@ class LiveFeedSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Section Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Live Feed",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {
-                  // TODO: Navigate to detailed live feed page
-                },
-                child: Text("View All", style: TextStyle(color: Colors.blue)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section Header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Live Feed",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextButton(
+              onPressed: () {
+                // TODO: Navigate to detailed live feed page
+              },
+              child: Text("View All", style: TextStyle(color: Colors.blue)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
 
-          // Live Feed Videos
-          Row(
-            children: [
-              Expanded(
-                child: LiveFeedCard(
-                  cameraTitle: "Camera 1 - Main Entrance",
-                  imageUrl:
-                      "https://www.shutterstock.com/image-photo/face-detection-recognition-citizens-people-600nw-1791158417.jpg",
-                  onTap: () {
-                    // TODO: Implement full-screen feed viewer
-                  },
-                ),
+        // Live Feed Videos
+        Row(
+          children: [
+            Expanded(
+              child: LiveFeedCard(
+                cameraTitle: "Camera 1 - Main Entrance",
+                imageUrl:
+                    "https://www.shutterstock.com/image-photo/face-detection-recognition-citizens-people-600nw-1791158417.jpg",
+                onTap: () {
+                  // TODO: Implement full-screen feed viewer
+                },
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: LiveFeedCard(
-                  cameraTitle: "Camera 2 - Parking",
-                  imageUrl:
-                      "https://www.clairvoyant.ai/hubfs/Train%20the%20Model.jpeg",
-                  onTap: () {
-                    // TODO: Implement full-screen feed viewer
-                  },
-                ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: LiveFeedCard(
+                cameraTitle: "Camera 2 - Parking",
+                imageUrl:
+                    "https://www.clairvoyant.ai/hubfs/Train%20the%20Model.jpeg",
+                onTap: () {
+                  // TODO: Implement full-screen feed viewer
+                },
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
