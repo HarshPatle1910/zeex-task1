@@ -1,11 +1,43 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class IncidentDashboardController extends GetxController {
-  var totalIncidents = 83.obs;
-  var highSeverity = 22.obs;
-  var avgResponseTime = 15.obs;
-  var resolutionRate = 95.obs;
+  var totalIncidents = 0.obs;
+  var highSeverity = 0.obs;
+  var avgResponseTime = 0.obs;
+  var resolutionRate = 0.obs;
+
+  var incidents = <IncidentModel>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchIncidentData();
+  }
+
+  Future<void> fetchIncidentData() async {
+    final url = 'http://65.0.118.209:5000/get_alerts?user_id=user_001';
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final List data = json.decode(response.body);
+        incidents.value = data.map((e) => IncidentModel.fromJson(e)).toList();
+        totalIncidents.value = incidents.length;
+
+        // Optionally update metrics
+        highSeverity.value =
+            incidents.where((e) => e.severity.toLowerCase() == 'high').length;
+      } else {
+        print('Failed to load data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
 }
 
 class IncidentDashboard extends StatelessWidget {
@@ -50,11 +82,11 @@ class IncidentDashboard extends StatelessWidget {
           SizedBox(height: 16),
           _buildInsightsCard(context),
           SizedBox(height: 16),
-          _buildMetricsRow(),
+
+          _buildRecentIncidentsTable(),
           SizedBox(height: 16),
           _buildChartsSection(),
-          SizedBox(height: 16),
-          _buildRecentIncidentsTable(),
+
           SizedBox(height: 16),
           _buildCustomRuleForm(),
         ],
@@ -71,36 +103,6 @@ class IncidentDashboard extends StatelessWidget {
           'AI Insight: Weapon Detection incidents increased by 30% near Main Entrance over the last month. Consider increasing security measures.',
           // style: TextStyle(fontSize: 16),
         ),
-      ),
-    );
-  }
-
-  Widget _buildMetricsRow() {
-    return Obx(
-      () => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildMetricCard(
-            'Total Incidents',
-            controller.totalIncidents.value,
-            Colors.blue,
-          ),
-          _buildMetricCard(
-            'High Severity',
-            controller.highSeverity.value,
-            Colors.red,
-          ),
-          _buildMetricCard(
-            'Avg. Response Time',
-            '${controller.avgResponseTime.value}s',
-            Colors.orange,
-          ),
-          _buildMetricCard(
-            'Resolution Rate',
-            '${controller.resolutionRate.value}%',
-            Colors.green,
-          ),
-        ],
       ),
     );
   }
@@ -167,31 +169,43 @@ class IncidentDashboard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Text(
               'Recent Incidents',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
-          DataTable(
-            columns: [
-              DataColumn(label: Text('Date/Time')),
-              DataColumn(label: Text('Location')),
-              DataColumn(label: Text('Violation Type')),
-              DataColumn(label: Text('Severity')),
-            ],
-            rows: [
-              DataRow(
-                cells: [
-                  DataCell(Text('2025-03-18, 14:30')),
-                  DataCell(Text('Main Entrance')),
-                  DataCell(Text('Weapon Detection')),
-                  DataCell(Text('High')),
+          Obx(() {
+            if (controller.incidents.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('No incidents found or loading...'),
+              );
+            }
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: const [
+                  DataColumn(label: Text('Date/Time')),
+                  DataColumn(label: Text('Location')),
+                  DataColumn(label: Text('Violation Type')),
+                  DataColumn(label: Text('Severity')),
                 ],
+                rows:
+                    controller.incidents.map((incident) {
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(incident.datetime)),
+                          DataCell(Text(incident.location)),
+                          DataCell(Text(incident.violation)),
+                          DataCell(Text(incident.severity)),
+                        ],
+                      );
+                    }).toList(),
               ),
-            ],
-          ),
+            );
+          }),
         ],
       ),
     );
@@ -235,5 +249,40 @@ class IncidentDashboard extends StatelessWidget {
       ],
       onChanged: (value) {},
     );
+  }
+}
+
+class IncidentModel {
+  final String datetime;
+  final String location;
+  final String violation;
+  final String severity;
+
+  IncidentModel({
+    required this.datetime,
+    required this.location,
+    required this.violation,
+    required this.severity,
+  });
+
+  factory IncidentModel.fromJson(Map<String, dynamic> json) {
+    final rawDate = json['timestamp'] ?? '';
+    final formattedDate = _formatDate(rawDate);
+
+    return IncidentModel(
+      datetime: formattedDate,
+      location: json['location'] ?? '',
+      violation: json['violation_type'] ?? '',
+      severity: json['severity'] ?? '',
+    );
+  }
+
+  static String _formatDate(String input) {
+    try {
+      final dateTime = DateTime.parse(input);
+      return DateFormat('dd-MM-yyyy HH:mm:ss').format(dateTime);
+    } catch (e) {
+      return input;
+    }
   }
 }

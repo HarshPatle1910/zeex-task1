@@ -1,10 +1,6 @@
-import 'dart:html' as html; // Web-specific
-import 'dart:ui' as ui;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mjpeg/flutter_mjpeg.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class LiveFeedSection extends StatelessWidget {
   const LiveFeedSection({Key? key}) : super(key: key);
@@ -112,23 +108,23 @@ class LiveFeedCard extends StatelessWidget {
   Widget _buildVideoContent(bool isYouTube) {
     if (kIsWeb && isYouTube) {
       final videoId = _extractYouTubeVideoId(staticImage!);
-      if (videoId != null) {
-        final viewType = 'youtube-video-$videoId';
-
-        // Register once only
-        ui.platformViewRegistry.registerViewFactory(
-          viewType,
-          (int viewId) =>
-              html.IFrameElement()
-                ..src = 'https://www.youtube.com/embed/$videoId'
-                ..style.border = 'none'
-                ..allow =
-                    'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                ..allowFullscreen = true,
-        );
-
-        return HtmlElementView(viewType: viewType);
-      }
+      // if (videoId != null) {
+      //   final viewType = 'youtube-video-$videoId';
+      //
+      //   // Register once only
+      //   ui.platformViewRegistry.registerViewFactory(
+      //     viewType,
+      //     (int viewId) =>
+      //         html.IFrameElement()
+      //           ..src = 'https://www.youtube.com/embed/$videoId'
+      //           ..style.border = 'none'
+      //           ..allow =
+      //               'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+      //           ..allowFullscreen = true,
+      //   );
+      //
+      //   return HtmlElementView(viewType: viewType);
+      // }
     }
 
     if (streamUrl != null) {
