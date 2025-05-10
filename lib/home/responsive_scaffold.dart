@@ -30,19 +30,26 @@ class ResponsiveScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue.shade700,
+        title: const Text(
+          "ZeexAI",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      drawer: NavigationSidebar(controller: _controller),
       body: Container(
         alignment: Alignment.topCenter,
         color: Colors.grey.shade200,
         child: Row(
           children: [
-            // Sidebar
-            Expanded(
-              // flex: 2,
-              child: NavigationSidebar(controller: _controller),
-            ),
             // Main Content Area
             Expanded(
-              flex: 5,
+              flex: 2,
               child: Obx(() {
                 switch (_controller.currentPage.value) {
                   case 'Dashboard':
@@ -75,7 +82,7 @@ class ResponsiveScaffold extends StatelessWidget {
               }),
             ),
             Expanded(
-              flex: 2,
+              // flex: 2,
               child: Align(
                 alignment: Alignment.topRight,
                 child: Container(

@@ -280,7 +280,7 @@ class IncidentModel {
   static String _formatDate(String input) {
     try {
       final dateTime = DateTime.parse(input);
-      return DateFormat('dd-MM-yyyy HH:mm:ss').format(dateTime);
+      return DateFormat('dd MMM yyyy, hh:mm a').format(dateTime);
     } catch (e) {
       return input;
     }
